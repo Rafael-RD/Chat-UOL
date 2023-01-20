@@ -1,10 +1,13 @@
 let intervalId;
 let user={name: ''};
+let destinatario="Todos";
+const elementDest=document.querySelector('footer div span');
+elementDest.innerHTML=`Enviando para ${destinatario}`
 const principal=document.querySelector('main').querySelector('ul');
 
 function mostrarMensagens(msg){
     principal.innerHTML='';
-    for(let i=0;i<msg.length-1;i++){
+    for(let i=0;i<msg.length;i++){
         const tipo=msg[i].type;
         if(tipo==='status'){
             principal.innerHTML+=`
@@ -30,6 +33,7 @@ function atualizar(){
     promessaManterLogIn.catch(resp=>{
         alert('Revalidação falhada');
         console.log(resp.response.status);
+        clearInterval(intervalId);
     })
     const chat=axios.get('https://mock-api.driven.com.br/api/v6/uol/messages');
     chat.then(resp=>{
@@ -49,6 +53,7 @@ function entrarNaSala(){
     promessaLogIn.then(resp=>{    
         console.log('Login Feito');
         console.log(resp.data);
+        atualizar(user);
         intervalId=setInterval(atualizar, 3000, user);
     });
     promessaLogIn.catch(resp=>{
@@ -61,15 +66,29 @@ function entrarNaSala(){
     });
 }
 
-
-function abc(){
-    for(let i=0;i<arguments.length;i++){
-        console.log(arguments[i]);
+function enviarMensagem(element){
+    const msg = element.parentNode.querySelector('#mensagem').value;
+    if(msg){
+        const obj={from: user.name, to: destinatario, text: msg, type:""};
+        if(destinatario==="Todos"){
+            obj.type="message";
+            console.log(obj);
+        }else{
+            obj.type= "message_private";
+            console.log(obj);
+        }
+        console.log(obj);
+        const promMsg=axios.post('https://mock-api.driven.com.br/api/v6/uol/messages',obj);
+        promMsg.then(resp=>{
+            console.log('Msg enviada com sucesso');
+        });
+        promMsg.catch(resp=>{
+            console.log('Erro ao enviar msg'+resp.response.status);
+        });
+        element.parentNode.querySelector('#mensagem').value='';
     }
 }
-
-
-
+    
 entrarNaSala();
 
 
