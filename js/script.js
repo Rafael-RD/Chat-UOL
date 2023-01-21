@@ -13,15 +13,15 @@ function mostrarMensagens(msg){
         const tipo=msg[i].type;
         if(tipo==='status'){
             principal.innerHTML+=`
-            <li class="${msg[i].type}"><span>(${msg[i].time}) </span> <span> ${msg[i].from} </span> ${msg[i].text}</li>
+            <li data-test="message" class="${msg[i].type}"><span>(${msg[i].time}) </span> <span> ${msg[i].from} </span> ${msg[i].text}</li>
             `
         }else if(tipo==='message'){
             principal.innerHTML+=`
-            <li class="${msg[i].type}"><span>(${msg[i].time}) </span> <span> ${msg[i].from} </span> para <span> ${msg[i].to} </span>:  ${msg[i].text}</li>
+            <li data-test="message" class="${msg[i].type}"><span>(${msg[i].time}) </span> <span> ${msg[i].from} </span> para <span> ${msg[i].to} </span>:  ${msg[i].text}</li>
             `
         }else if(tipo==='private_message' && msg[i].to===user.name){
             principal.innerHTML+=`
-            <li class="${msg[i].type}"><span>(${msg[i].time}) </span> <span> ${msg[i].from} </span> reservadamente para <span> ${msg[i].to} </span>: ${msg[i].text}</li>
+            <li data-test="message" class="${msg[i].type}"><span>(${msg[i].time}) </span> <span> ${msg[i].from} </span> reservadamente para <span> ${msg[i].to} </span>: ${msg[i].text}</li>
             `
         }
         principal.querySelectorAll('li')[principal.querySelectorAll('li').length-1].scrollIntoView();
@@ -125,17 +125,7 @@ function enviarMensagem(element){
         element.parentNode.querySelector('#mensagem').value='';
     }
 }
-function mudarParaPrivado(bool){
-    if(bool){
-        msgPrivada=true;
-        document.querySelector('.privacidade').children[1].children[2].classList.remove('hidden');
-        document.querySelector('.privacidade').children[0].children[2].classList.add('hidden');
-    }else{
-        msgPrivada=false;
-        document.querySelector('.privacidade').children[1].children[2].classList.add('hidden');
-        document.querySelector('.privacidade').children[0].children[2].classList.remove('hidden');
-    }
-}
+
 
 function atualizarParticipantes(){
     const promessaParticipantes=axios.get('https://mock-api.driven.com.br/api/v6/uol/participants');
@@ -144,18 +134,18 @@ function atualizarParticipantes(){
         participantes=resp.data;
         const dest= document.querySelector('.destinatario');
         dest.innerHTML=`
-            <li onclick="mudarDestinatario(this)">
+            <li data-test="all" onclick="mudarDestinatario(this)">
                 <ion-icon name="people"></ion-icon>
                 <span>Todos</span>
-                <ion-icon class="selectable hidden" name="checkbox"></ion-icon>
+                <ion-icon data-test="check" class="selectable hidden" name="checkbox"></ion-icon>
             </li>
         `
         resp.data.forEach((element,index)=>{
             dest.innerHTML+=`
-            <li onclick="mudarDestinatario(this)">
+            <li data-test="participant" onclick="mudarDestinatario(this)">
                 <ion-icon name="person-circle"></ion-icon>
                 <span>${element.name}</span>
-                <ion-icon class="selectable hidden" name="checkbox"></ion-icon>
+                <ion-icon data-test="check" class="selectable hidden" name="checkbox"></ion-icon>
             </li>
             `
         });
@@ -180,6 +170,39 @@ function mudarDestinatario(element){
     });
     element.children[2].classList.remove('hidden');
     destinatario=element.children[1].innerHTML;
+    document.querySelector('.info').innerHTML=`
+    Enviando para ${destinatario}
+    `;
+    if(msgPrivada===true){
+        document.querySelector('.info').innerHTML+=`
+        (reservadamente)
+        `
+    }else{
+        document.querySelector('.info').innerHTML+=`
+        (publicamente)
+        `
+    }
+}
+
+function mudarParaPrivado(bool){
+    document.querySelector('.info').innerHTML=`
+    Enviando para ${destinatario}
+    `;
+    if(bool){
+        msgPrivada=true;
+        document.querySelector('.privacidade').children[1].children[2].classList.remove('hidden');
+        document.querySelector('.privacidade').children[0].children[2].classList.add('hidden');
+        document.querySelector('.info').innerHTML+=`
+        (reservadamente)
+        `
+    }else{
+        msgPrivada=false;
+        document.querySelector('.privacidade').children[1].children[2].classList.add('hidden');
+        document.querySelector('.privacidade').children[0].children[2].classList.remove('hidden');
+        document.querySelector('.info').innerHTML+=`
+        (publicamente)
+        `
+    }
 }
 
 function mostrarSidebar(bool){
