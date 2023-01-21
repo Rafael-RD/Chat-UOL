@@ -33,7 +33,7 @@
         <input data-test="input-name" type="text" id="user" placeholder="Digite o usuario..." onkeydown="if(event.keyCode==13) this.parentNode.querySelector('#entrar').click()">
         <button data-test="send-name" id="entrar" onclick="entrarNaSala(this.parentNode.querySelector('#user').value)">Entrar</button>
     </div>
-    <div class="fundo-sidebar hidden" onclick="mostrarSidebar(false)"></div>
+    <div data-test="overlay" class="fundo-sidebar hidden" onclick="mostrarSidebar(false)"></div>
     <aside class="sidebar hidden">
         <span>Escolha um contato para enviar mensagem:</span>
         <ul class="destinatario">
