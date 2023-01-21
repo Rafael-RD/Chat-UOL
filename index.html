@@ -12,22 +12,51 @@
     <title>Chat UOL</title>
 </head>
 <body>
-    <header>
+    <header class="hidden">
         <img src="img/logo.jpg" alt="Logo" style="max-width: 90px;">
-        <ion-icon name="people"></ion-icon>
+        <ion-icon name="people" onclick="mostrarSidebar(true)"></ion-icon>
     </header>
-    <main>
+    <main class="hidden">
         <ul class="chat">
 
         </ul>
     </main>
-    <footer>
+    <footer class="hidden">
         <div>
-            <input placeholder="Escreva aqui..." ></input>
+            <input id="mensagem" onkeydown="if(event.keyCode==13){this.parentNode.parentNode.querySelector('#enviar').click()}" placeholder="Escreva aqui..." type="text"></input>
             <span></span>
         </div>
-        <ion-icon name="paper-plane-outline"></ion-icon>
+        <ion-icon id="enviar" onclick="enviarMensagem(this)" name="paper-plane-outline"></ion-icon>
     </footer>
+    <div class="login">
+        <img src="/img/logo.jpg" alt="logo">
+        <input type="text" id="user" placeholder="Digite o usuario..." onkeydown="if(event.keyCode==13) this.parentNode.querySelector('#entrar').click()">
+        <button id="entrar" onclick="entrarNaSala(this.parentNode.querySelector('#user').value)">Entrar</button>
+    </div>
+    <div class="fundo-sidebar hidden" onclick="mostrarSidebar(false)"></div>
+    <aside class="sidebar hidden">
+        <span>Escolha um contato para enviar mensagem:</span>
+        <ul class="destinatario">
+            <li>
+                <ion-icon name="people"></ion-icon>
+                <span>Todos</span>
+                <ion-icon class="selectable" name="checkbox"></ion-icon>
+            </li>
+        </ul>
+        <span>Visibilidade:</span>
+        <ul class="privacidade">
+            <li onclick="mudarParaPrivado(false)">
+                <ion-icon name="lock-open"></ion-icon>
+                <span>Publico</span>
+                <ion-icon class="selectable" name="checkbox"></ion-icon>
+            </li>
+            <li onclick="mudarParaPrivado(true)">
+                <ion-icon name="lock-closed"></ion-icon>
+                <span>Privado</span>
+                <ion-icon class="selectable hidden" name="checkbox"></ion-icon>
+            </li>
+        </ul>
+    </aside>
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

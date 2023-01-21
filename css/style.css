@@ -4,6 +4,7 @@
     font-size: 14px;
     font-weight: 400;
 }
+
 header{
     background-color: white;
     height: 80px;
@@ -73,14 +74,12 @@ footer{
 }
 footer > div{
     width: 95%;
-    background-color: pink;
 }
 footer > div > input{
     width: 100%;
     margin: 10px 10px 10px 0;
     box-sizing: border-box;
     border: none;
-    background-color: salmon;
     font-size: 18px;
     outline: none;
 }
@@ -93,8 +92,90 @@ footer > div > span{
     font-family: 'Roboto';
     font-weight: 300;
     font-size: 14px;
-    background-color: fuchsia;
 }
 footer > ion-icon{
     font-size: 50px;
+}
+.login{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 15vh 0 0 0;
+}
+.login img{
+    height: 20vh;
+    width: auto;
+    margin-bottom: 15vh;
+}
+.login input{
+    width: 70vw;
+    height: 5vh;
+    text-align: center;
+    font-size: 18px;
+    border: solid 1px #D7D7D7;
+    outline: none;
+    border-radius: 5vw;
+    margin-bottom: 4vh;
+}
+.login button{
+    width: 22vw;
+    height: 6vh;
+    color: #696969;
+    background-color: #e7e7e7;
+    border-radius: 3vw;
+    border: none;
+    font-size: 18px;
+}
+.sidebar{
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 5;
+    background-color: white;
+    height: 100%;
+    width: 260px;
+    padding: 25px;
+    font-size: 16px;
+    font-family: 'Roboto';
+    overflow-y: scroll;
+    box-sizing: border-box;
+}
+.sidebar > span{
+    text-align: center;
+    font-weight: 700;
+    margin: 10px 0;
+}
+.sidebar > ul > li{
+    display: flex;
+    align-items: center;
+    margin: 5px;
+    cursor: pointer;
+    position: relative;
+}
+.sidebar > ul > li > ion-icon{
+    font-size: 23px;
+    margin-right: 5px;
+}
+.sidebar > ul > li > .selectable{
+    position: absolute;
+    right: 0;
+    color: rgb(0, 200, 0);
+}
+.fundo-sidebar{
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(2px);
+    z-index: 4;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+.hidden{
+    display: none;
 }

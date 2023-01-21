@@ -1,6 +1,8 @@
 let intervalId;
-let user={name: ''};
+let user={name: null};
 let destinatario="Todos";
+let msgPrivada=false;
+let participantes=[];
 const elementDest=document.querySelector('footer div span');
 elementDest.innerHTML=`Enviando para ${destinatario}`
 const principal=document.querySelector('main').querySelector('ul');
@@ -25,7 +27,10 @@ function mostrarMensagens(msg){
         principal.querySelectorAll('li')[principal.querySelectorAll('li').length-1].scrollIntoView();
     } 
 }
-function atualizar(){
+
+
+
+function revalidar(){
     const promessaManterLogIn=axios.post('https://mock-api.driven.com.br/api/v6/uol/status',user);
     promessaManterLogIn.then(resp=>{
         console.log('Sessão revalidada');
@@ -34,7 +39,13 @@ function atualizar(){
         alert('Revalidação falhada');
         console.log(resp.response.status);
         clearInterval(intervalId);
+        if(confirm('Relogar?')){
+            esconderLogin(false);
+        }
     })
+}
+
+function atualizarChat(){
     const chat=axios.get('https://mock-api.driven.com.br/api/v6/uol/messages');
     chat.then(resp=>{
         console.log('chat recebido');
@@ -46,15 +57,41 @@ function atualizar(){
     })
 }
 
+
+
+function atualizar(){
+    revalidar();
+    atualizarChat();
+    atualizarParticipantes();
+}
+function esconderLogin(bool){
+    const tela=document.querySelector('.login');
+    if(bool){
+        document.querySelector('header').classList.remove('hidden');
+        document.querySelector('main').classList.remove('hidden');
+        document.querySelector('footer').classList.remove('hidden');
+        tela.classList.add('hidden');
+    }else{
+        tela.classList.remove('hidden');
+        document.querySelector('header').classList.add('hidden');
+        document.querySelector('main').classList.add('hidden');
+        document.querySelector('footer').classList.add('hidden');
+    }
+}
 function entrarNaSala(){
-    user.name=prompt('nome: ');
+    document.querySelector('#user').value='';
+    if(arguments[0]===undefined){
+        user.name=prompt('nome: ');
+        if(user.name===null) return;
+    }else user.name=arguments[0];
     const promessaLogIn=axios.post('https://mock-api.driven.com.br/api/v6/uol/participants',user);
     console.log(promessaLogIn);
     promessaLogIn.then(resp=>{    
         console.log('Login Feito');
         console.log(resp.data);
-        atualizar(user);
-        intervalId=setInterval(atualizar, 3000, user);
+        atualizar();
+        intervalId=setInterval(atualizar, 3000);
+        esconderLogin(true);
     });
     promessaLogIn.catch(resp=>{
         console.log('Erro login');
@@ -70,17 +107,17 @@ function enviarMensagem(element){
     const msg = element.parentNode.querySelector('#mensagem').value;
     if(msg){
         const obj={from: user.name, to: destinatario, text: msg, type:""};
-        if(destinatario==="Todos"){
+        if(msgPrivada===false){
             obj.type="message";
             console.log(obj);
         }else{
-            obj.type= "message_private";
+            obj.type= "private_message";
             console.log(obj);
         }
-        console.log(obj);
         const promMsg=axios.post('https://mock-api.driven.com.br/api/v6/uol/messages',obj);
         promMsg.then(resp=>{
             console.log('Msg enviada com sucesso');
+            atualizar();
         });
         promMsg.catch(resp=>{
             console.log('Erro ao enviar msg'+resp.response.status);
@@ -88,14 +125,70 @@ function enviarMensagem(element){
         element.parentNode.querySelector('#mensagem').value='';
     }
 }
-    
-entrarNaSala();
+function mudarParaPrivado(bool){
+    if(bool){
+        msgPrivada=true;
+        document.querySelector('.privacidade').children[1].children[2].classList.remove('hidden');
+        document.querySelector('.privacidade').children[0].children[2].classList.add('hidden');
+    }else{
+        msgPrivada=false;
+        document.querySelector('.privacidade').children[1].children[2].classList.add('hidden');
+        document.querySelector('.privacidade').children[0].children[2].classList.remove('hidden');
+    }
+}
+
+function atualizarParticipantes(){
+    const promessaParticipantes=axios.get('https://mock-api.driven.com.br/api/v6/uol/participants');
+    promessaParticipantes.then(resp=>{
+        console.log('Participantes recebidos');
+        participantes=resp.data;
+        const dest= document.querySelector('.destinatario');
+        dest.innerHTML=`
+            <li onclick="mudarDestinatario(this)">
+                <ion-icon name="people"></ion-icon>
+                <span>Todos</span>
+                <ion-icon class="selectable hidden" name="checkbox"></ion-icon>
+            </li>
+        `
+        resp.data.forEach((element,index)=>{
+            dest.innerHTML+=`
+            <li onclick="mudarDestinatario(this)">
+                <ion-icon name="person-circle"></ion-icon>
+                <span>${element.name}</span>
+                <ion-icon class="selectable hidden" name="checkbox"></ion-icon>
+            </li>
+            `
+        });
+        for(let i=0; i<dest.children.length;i++){
+            if(dest.children[i].children[1].innerHTML===destinatario) {
+                dest.children[i].children[2].classList.remove('hidden');
+                break;
+            }else if(i>=dest.children.length-1){
+                alert('Destinatario não esta mais na sala');
+            }
+        }
+    });
+    promessaParticipantes.catch(resp=>{
+        console.log('Erro ao receber participantes')
+    })
+}
 
 
-// user.name=prompt('Nome:');
-// if(user.name!==null) entrarNaSala();
-// const msgs=axios.get('https://mock-api.driven.com.br/api/v6/uol/messages');
-//  msgs.then(resp=>{
-//      console.log(resp);
-//      mostrarMensagens(resp.data);
-//  });
+function mudarDestinatario(element){
+    document.querySelectorAll('.destinatario .selectable').forEach(temp=>{
+        temp.classList.add('hidden');
+    });
+    element.children[2].classList.remove('hidden');
+    destinatario=element.children[1].innerHTML;
+}
+
+function mostrarSidebar(bool){
+    if(bool){
+        document.querySelector('.sidebar').classList.remove('hidden');
+        document.querySelector('.fundo-sidebar').classList.remove('hidden');
+    }else{
+        document.querySelector('.sidebar').classList.add('hidden');
+        document.querySelector('.fundo-sidebar').classList.add('hidden');
+    }
+}
+
