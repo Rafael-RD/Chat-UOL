@@ -19,7 +19,7 @@ function mostrarMensagens(msg){
             principal.innerHTML+=`
             <li data-test="message" class="${msg[i].type}"><span>(${msg[i].time}) </span> <span> ${msg[i].from} </span> para <span> ${msg[i].to} </span>:  ${msg[i].text}</li>
             `
-        }else if(tipo==='private_message' && msg[i].to===user.name){
+        }else if(tipo==='private_message' && (msg[i].to===user.name || msg[i].from===user.name)){
             principal.innerHTML+=`
             <li data-test="message" class="${msg[i].type}"><span>(${msg[i].time}) </span> <span> ${msg[i].from} </span> reservadamente para <span> ${msg[i].to} </span>: ${msg[i].text}</li>
             `
